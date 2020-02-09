@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/cxf      http://camel.apache.org/schema/cxf/camel-cxf.xsd        http://cxf.apache.org/jaxrs     http://cxf.apache.org/schemas/jaxrs.xsd        http://camel.apache.org/schema/spring     http://camel.apache.org/schema/spring/camel-spring.xsd     ">
+    <cxf:rsServer address="http://localhost:8080/cxf/api"
+        id="createClaimCXFEndpoint" serviceClass="com.tech.task.service.intf.EmployeeCXF"/>
+    <camelContext id="camelRestlet" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <jaxb contextPath="com.tech.task.models" id="myJaxb" prettyPrint="true"/>
+            <json id="jack" library="Jackson" unmarshalTypeName="com.tech.task.models.Employee"/>
+        </dataFormats>
+        <route id="claimsCXFRoute">
+            <from id="server" uri="direct:createEmployeeRoute"/>
+            <unmarshal id="_unmarshal1" ref="jack"/>
+            <log id="route-log-cxf" message=">>> ${body}"/>
+            <unmarshal id="_unmarshal2" ref="jack"/>
+        </route>
+    </camelContext>
+    <bean class="com.tech.task.routeHelpers.DBRouterGet" id="dbROuteGet" name="routeHelperGet"/>
+    <bean class="com.tech.task.routeHelpers.DBRouterInsert"
+        id="dbROuteInsert" name="routeHelperInsert"/>
+</beans>
